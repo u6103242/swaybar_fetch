@@ -15,11 +15,15 @@ public:
     /// Returns cpu status
     std::string get_status(STATUS_MODE mode);
 
+    /// Initializes some values
+    Ram();
 private:
     /// File stream of /proc/stat
     ifstream _file_ram = ifstream("/proc/meminfo");
     /// Formatted data from latest cpu status
     std::string _formatted_status;
+
+    unsigned long _free_kb, _total_kb, _used_kb;
 
     /// Fetches the cpu status
     void _get_ram();

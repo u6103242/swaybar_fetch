@@ -15,6 +15,7 @@ void Time::_get_time(const STATUS_MODE mode) {
         _time_t = time(nullptr);
         _time_tm = *localtime(&_time_t);
 
+        // TODO: move formatting logic to get_status
         ostringstream oss;
         if (mode == STATUS_MODE::DEFAULT or mode == STATUS_MODE::MINIMAL)
                 oss << put_time(&_time_tm, "%d/%m/%Y %H-%M");

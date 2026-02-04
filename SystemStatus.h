@@ -5,7 +5,6 @@
 #ifndef SWAYBAR_FETCH_SYSTEMSTATUS_H
 #define SWAYBAR_FETCH_SYSTEMSTATUS_H
 
-#include <iostream>
 #include <string>
 
 #include "Constants.h"
@@ -13,6 +12,11 @@
 #include "Cpu.h"
 #include "Ram.h"
 #include "Time.h"
+
+// TODO: (IMPORTANT) Should divide all services into three main functions:
+//  -  fetch data
+//  -  interpret data
+//  -  format and return data
 
 class SystemStatus {
 public:

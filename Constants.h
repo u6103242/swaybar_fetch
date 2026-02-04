@@ -42,5 +42,6 @@ enum class STATUS_MODE {
     SERVER,				// Displays information from a mounted server
     DISABLED			// Completely disables the logic
 };
+constexpr STATUS_MODE DEFAULT_MODE = STATUS_MODE::DEFAULT;
 
 #endif //SWAYBAR_FETCH_CONSTANTS_H

@@ -5,11 +5,10 @@
 #include "Constants.h"
 #include "SystemStatus.h"
 
-[[noreturn]] int main()
-{
+[[noreturn]] int main() {
 	ios_base::sync_with_stdio(false);
 
-	SystemStatus sys;
+	SystemStatus sys(DEFAULT_MODE);
 	auto next_tick = chrono::steady_clock::now();
 
 	while (true) {

@@ -19,9 +19,9 @@ public:
     };
 
     struct wifi_connection {
-        string ssid;
-        string quality;
-        string strength;
+        std::string ssid;
+        std::string quality;
+        std::string strength;
     };
 
     struct net_interface_state {
@@ -34,8 +34,8 @@ public:
     };
 
     struct net_interface {
-        string path;
-        string interface_name;
+        std::string path;
+        std::string interface_name;
         interface_type type;
         bool oper_up;
         bool carrier;
@@ -43,16 +43,16 @@ public:
         net_interface_state state;
         net_interface_rate rate;
 
-        optional<wifi_state> wifi;
+        wifi_connection wifi;
     };
 
-    vector<net_interface> interfaces;
+    std::vector<net_interface> interfaces;
 
     Network();
 
 private:
-    const string _interfaces_dir = "/sys/class/net/";
-    ifstream _file_interfaces_state = ifstream("/proc/net/dev");
+    const std::string _interfaces_dir = "/sys/class/net/";
+    std::ifstream _file_interfaces_state = std::ifstream("/proc/net/dev");
 };
 
 
