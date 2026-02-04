@@ -34,4 +34,13 @@ constexpr unsigned short int _TUU_AUD = _MSPU_AUD / MSPT;
 constexpr unsigned short int _TUU_POW = _MSPU_POW / MSPT;
 constexpr unsigned short int _TUU_TIME = _MSPU_TIME / MSPT;
 
+/// Status modes
+enum class STATUS_MODE {
+    DEFAULT,			// Displays general information
+    HARDWARE_ADVANCED,	// Displays advanced hardware-only information
+    MINIMAL,			// Displays date and time
+    SERVER,				// Displays information from a mounted server
+    DISABLED			// Completely disables the logic
+};
+
 #endif //SWAYBAR_FETCH_CONSTANTS_H

@@ -4,9 +4,6 @@
 
 #include "Constants.h"
 #include "SystemStatus.h"
-#include "Network.h"
-
-using namespace std;
 
 [[noreturn]] int main()
 {

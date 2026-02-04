@@ -4,10 +4,14 @@
 
 #include "SystemStatus.h"
 
+SystemStatus::SystemStatus(const STATUS_MODE mode) {
+    _mode = mode;
+}
+
 void SystemStatus::tick() {
     _updated = false;
     if (_nupd % _TUU_LANG == 0) _get_lang();
-    //if (_nupd % _TUU_NET == 0) _get_net();
+    if (_nupd % _TUU_NET == 0) _get_net();
     if (_nupd % _TUU_CPU == 0) _get_cpu();
     if (_nupd % _TUU_RAM == 0) _get_ram();
     if (_nupd % _TUU_AUD == 0) _get_aud();
@@ -41,8 +45,37 @@ string SystemStatus::get_status() const {
         _cache_time + sep;
 }
 
-////////// LANG /////////
 void SystemStatus::_get_lang() {
     _updated = true;
+
 }
-/////////////////////////
+
+void SystemStatus::_get_net() {
+    _updated = true;
+    _cache_net = _sys_net.get_status(_mode);
+}
+
+void SystemStatus::_get_cpu() {
+    _updated = true;
+    _cache_cpu = _sys_cpu.get_status(_mode);
+}
+
+void SystemStatus::_get_ram() {
+    _updated = true;
+    _cache_ram = _sys_ram.get_status(_mode);
+}
+
+void SystemStatus::_get_aud() {
+    _updated = true;
+
+}
+
+void SystemStatus::_get_pow() {
+    _updated = true;
+
+}
+
+void SystemStatus::_get_time() {
+    _updated = true;
+    _cache_time = _sys_time.get_status(_mode);
+}
