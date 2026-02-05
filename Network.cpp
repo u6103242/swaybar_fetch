@@ -11,6 +11,7 @@
 
 Network::Network() {
     // Get interfaces
+    DBG("\n --- Getting interfaces ---");
     for (const auto & entry : std::filesystem::directory_iterator(_interfaces_dir)) {
         net_interface aux_interface;
 
@@ -18,7 +19,7 @@ Network::Network() {
         aux_interface.interface_name = entry.path().filename().string();
         DBG("Found interface: " << aux_interface.interface_name << " at '" << aux_interface.path << "'");
         if (aux_interface.interface_name == "lo") {
-            DBG(" - Skiped 'lo' interface\n");
+            DBG(" - Skiped 'lo' interface");
             continue;
         }
         aux_interface.type = std::filesystem::directory_entry(aux_interface.path + "/wireless").exists() ? WIRELESS : WIRED;
@@ -34,7 +35,7 @@ Network::Network() {
             DBG(" - [" << aux_interface.interface_name << "] Operstate: " << operstate_val);
             file_operstate.close();
             if (not aux_interface.oper_up) {
-                DBG(" - Skiped interface\n");
+                DBG(" - Skiped interface");
                 continue;
             }
         }
@@ -49,17 +50,17 @@ Network::Network() {
             DBG(" - [" << aux_interface.interface_name << "] Carrier: " << carrier_val);
             file_carrier.close();
             if (not aux_interface.oper_up) {
-                DBG(" - Skiped interface\n");
+                DBG(" - Skiped interface");
                 continue;
             }
         }
 
         interfaces.push_back(aux_interface);
-        DBG(" - Added interface\n");
+        DBG(" - Added interface");
     }
 
-    // Get interfaces' state
-    DBG("Getting interfaces' state");
+    // Get states
+    DBG("\n --- Getting states ---");
     _file_interfaces_state.ignore(1024, '\n'); // header 1
     _file_interfaces_state.ignore(1024, '\n'); // header 2
     _file_interfaces_state.ignore(1024, '\n'); // lo
@@ -69,11 +70,12 @@ Network::Network() {
     while (_file_interfaces_state >> interface_name) {
         interface_name = interface_name.erase(interface_name.size() - 1);
         DBG("Interface name: " << interface_name);
+
         _file_interfaces_state
-            >> state.rx_bytes >> state.rx_packets >> state.rx_errs >> state.rx_fifo
-            >> state.rx_frame >> state.rx_compressed >> state.rx_multicast
-            >> state.tx_bytes >> state.tx_packets >> state.tx_errs >> state.tx_fifo
-            >> state.tx_frame >> state.tx_compressed >> state.tx_multicast;
+            >> state.rx_bytes >> state.rx_packets >> state.rx_errs >> state.rx_drop
+            >> state.rx_fifo >> state.rx_frame >> state.rx_compressed >> state.rx_multicast
+            >> state.tx_bytes >> state.tx_packets >> state.tx_errs >> state.tx_drop
+            >> state.tx_fifo >> state.tx_frame >> state.tx_compressed >> state.tx_multicast;
 
         auto it = std::find_if( interfaces.begin(), interfaces.end(),
             [&](const net_interface& net_interface) {
@@ -82,8 +84,8 @@ Network::Network() {
         );
 
         if (it == interfaces.end()) {
-            DBG(" - Skipping interface");
+            DBG(" - Skipped");
             continue;
-        }
+        } else DBG(" - Active interface's state fetched");
     }
 }
