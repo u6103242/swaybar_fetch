@@ -40,6 +40,7 @@ std::string SystemStatus::get_status() const {
     return
         _cache_lang + sep +
         _cache_net + sep +
+        _cache_disk + sep +
         _cache_cpu + sep +
         _cache_ram + sep +
         _cache_aud + sep +
