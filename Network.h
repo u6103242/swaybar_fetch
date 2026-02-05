@@ -11,6 +11,8 @@
 #include <fstream>
 #include <optional>
 
+#include "Constants.h"
+
 class Network {
 public:
     enum interface_type : bool {
@@ -48,12 +50,13 @@ public:
 
     std::vector<net_interface> interfaces;
 
+    std::string get_status(STATUS_MODE mode);
+
     Network();
 
 private:
     const std::string _interfaces_dir = "/sys/class/net/";
     std::ifstream _file_interfaces_state = std::ifstream("/proc/net/dev");
 };
-
 
 #endif //SWAYBAR_FETCH_NETWORK_H

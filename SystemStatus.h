@@ -13,11 +13,6 @@
 #include "Ram.h"
 #include "Time.h"
 
-// TODO: (IMPORTANT) Should divide all services into three main functions:
-//  -  fetch data
-//  -  interpret data
-//  -  format and return data
-
 class SystemStatus {
 public:
 	/// System status constructor
@@ -33,7 +28,7 @@ public:
 	std::string get_status() const;
 private:
 	/// Current mode
-	STATUS_MODE _mode = STATUS_MODE::DEFAULT;
+	STATUS_MODE _mode = DEFAULT_MODE;
 
 	// Services
 	Network _sys_net;
@@ -50,8 +45,9 @@ private:
 	// Cached values
 	std::string _cache_lang;
 	std::string _cache_net;
-	std::string _cache_cpu = "CPU:   0%";
-	std::string _cache_ram = "RAM:   0Mb";
+	std::string _cache_disk;
+	std::string _cache_cpu;
+	std::string _cache_ram;
 	std::string _cache_aud;
 	std::string _cache_pow;
 	std::string _cache_time;

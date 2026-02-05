@@ -28,7 +28,7 @@ private:
     };
 
     /// File stream of /proc/stat
-    ifstream _file_cpu = ifstream("/proc/stat");
+    std::ifstream _file_cpu = std::ifstream("/proc/stat");
     /// Cpu state at previous cpu tick
     _cpu_state _prev_state;
 

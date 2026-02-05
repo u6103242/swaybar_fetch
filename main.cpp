@@ -8,17 +8,17 @@
 #include "Debug.h"
 
 [[noreturn]] int main() {
-	ios_base::sync_with_stdio(false);
+	std::ios_base::sync_with_stdio(false);
 
 	SystemStatus sys(DEFAULT_MODE);
-	auto next_tick = chrono::steady_clock::now();
+	auto next_tick = std::chrono::steady_clock::now();
 
 	while (true) {
-		next_tick += chrono::milliseconds(MSPT);
+		next_tick += std::chrono::milliseconds(MSPT);
 
 		sys.tick();
-		cout << sys.get_status() << endl;
+		std::cout << sys.get_status() << std::endl;
 
-		this_thread::sleep_until(next_tick);
+		std::this_thread::sleep_until(next_tick);
 	}
 }
