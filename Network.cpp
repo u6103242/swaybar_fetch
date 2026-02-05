@@ -7,13 +7,15 @@
 #include <iostream>
 #include <algorithm>
 
+#include "Debug.h"
+
 Network::Network() {
     // Get interfaces
     for (const auto & entry : std::filesystem::directory_iterator(_interfaces_dir)) {
         net_interface aux_interface;
 
         aux_interface.path = entry.path().string();
-        aux_interface.interface_name = aux_interface.path.erase(0, _interfaces_dir.length());
+        aux_interface.interface_name = aux_interface.path.erase(aux_interface.path.size() - 1);
         if (aux_interface.interface_name == "lo") continue;
 
         aux_interface.type = std::filesystem::directory_entry(aux_interface.path + "/wireless").exists() ? WIRELESS : WIRED;
@@ -33,6 +35,8 @@ Network::Network() {
         if (not aux_interface.oper_up) continue;
 
         interfaces.push_back(aux_interface);
+
+        DBG("Added interface: " << aux_interface.interface_name << " | Type: " << aux_interface.type << ")");
     }
 
     // Get interfaces' state
@@ -43,7 +47,7 @@ Network::Network() {
     net_interface_state state;
     std::string interface_name;
     while (_file_interfaces_state >> interface_name) {
-        interface_name = interface_name.erase(_interfaces_dir.length() - 1, 1);
+        interface_name = interface_name.erase(interface_name.size() - 1);
         _file_interfaces_state
             >> state.rx_bytes >> state.rx_packets >> state.rx_errs >> state.rx_fifo
             >> state.rx_frame >> state.rx_compressed >> state.rx_multicast
@@ -55,8 +59,10 @@ Network::Network() {
                 return net_interface.interface_name == interface_name;
             }
         );
-        it->state = state;
+
+        if (it == interfaces.end()) {
+            DBG("State for unknown interface: " << interface_name);
+            continue;
+        }
     }
-
-
 }

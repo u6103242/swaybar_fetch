@@ -4,6 +4,8 @@
 
 #include "SystemStatus.h"
 
+#include "Debug.h"
+
 SystemStatus::SystemStatus(const STATUS_MODE mode) {
     _mode = mode;
 }
@@ -52,7 +54,7 @@ void SystemStatus::_get_lang() {
 
 void SystemStatus::_get_net() {
     _updated = true;
-    _cache_net = _sys_net.get_status(_mode);
+    //_cache_net = _sys_net.get_status(_mode);
 }
 
 void SystemStatus::_get_cpu() {
