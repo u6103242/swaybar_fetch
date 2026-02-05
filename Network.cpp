@@ -7,11 +7,12 @@
 #include <iostream>
 #include <algorithm>
 
+#include "Constants.h"
 #include "Debug.h"
 
 Network::Network() {
     // Get interfaces
-    DBG("\n --- Getting interfaces ---");
+    DBG(" --- Getting interfaces --- ");
     for (const auto & entry : std::filesystem::directory_iterator(_interfaces_dir)) {
         net_interface aux_interface;
 
@@ -60,7 +61,7 @@ Network::Network() {
     }
 
     // Get states
-    DBG("\n --- Getting states ---");
+    DBG(" --- Getting states --- ");
     _file_interfaces_state.ignore(1024, '\n'); // header 1
     _file_interfaces_state.ignore(1024, '\n'); // header 2
     _file_interfaces_state.ignore(1024, '\n'); // lo
@@ -86,6 +87,13 @@ Network::Network() {
         if (it == interfaces.end()) {
             DBG(" - Skipped");
             continue;
-        } else DBG(" - Active interface's state fetched");
+        }
+
+        DBG(" - Active interface's state fetched");
+        it->state = state;
     }
+}
+
+std::string Network::get_status(STATUS_MODE mode) {
+    return "";
 }

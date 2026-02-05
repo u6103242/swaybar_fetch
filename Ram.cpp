@@ -4,51 +4,91 @@
 
 #include "Ram.h"
 
-std::string Ram::get_status(STATUS_MODE mode) {
-    _get_ram();
+#include "Debug.h"
 
-    double scaled_used;
-    const char* unit;
+std::string Ram::get_status(const STATUS_MODE mode) {
+    _fetch_data(mode);
+    _interpret_data(mode);
 
-    if (_used_kb >= 1048576) {
-        scaled_used = _used_kb / 1024.0 / 1024.0;
-        unit = "Gb";
-    } else if (_used_kb >= 1024) {
-        scaled_used = _used_kb / 1024.0;
-        unit = "Mb";
+    double ram_used_formatted;
+    const char* ram_units;
+
+    if (_ram_used_kb >= 1048576) {
+        ram_used_formatted = _ram_used_kb / 1024.0 / 1024.0;
+        ram_units = "Gb";
+    } else if (_ram_used_kb >= 1024) {
+        ram_used_formatted = _ram_used_kb / 1024.0;
+        ram_units = "Mb";
     } else {
-        scaled_used = static_cast<double>(_used_kb);
-        unit = "kb";
+        ram_used_formatted = static_cast<double>(_ram_used_kb);
+        ram_units = "kb";
     }
 
-    // TODO: formatting depending on status mode
     char buf[64];
-    snprintf(buf, sizeof(buf), "RAM: %5.2f%s", scaled_used, unit);
 
-    _formatted_status = buf;
+    // This can be turned into a switch case if more formatting options need to be added.
+    if (mode == STATUS_MODE::HARDWARE_ADVANCED) {
+        const char* swap_units;
+        double swap_used_formatted;
+        if (_ram_used_kb >= 1048576) {
+            swap_used_formatted = _ram_used_kb / 1024.0 / 1024.0;
+            swap_units = "Gb";
+        } else if (_ram_used_kb >= 1024) {
+            swap_used_formatted = _ram_used_kb / 1024.0;
+            swap_units = "Mb";
+        } else {
+            swap_used_formatted = static_cast<double>(_ram_used_kb);
+            swap_units = "kb";
+        }
 
-    return _formatted_status;
+        snprintf(buf, sizeof(buf), "RAM: %5.2f%s SWAP: %5.2f%s", ram_used_formatted, ram_units, swap_used_formatted, swap_units);
+    } else {
+        snprintf(buf, sizeof(buf), "RAM: %5.2f%s", ram_used_formatted, ram_units);
+    }
+
+    return buf;
 }
 
-Ram::Ram() {
-    _free_kb = _total_kb = _used_kb = 0;
-}
+void Ram::_fetch_data(const STATUS_MODE mode) {
+    std::string line;
 
-void Ram::_get_ram() {
-    string line;
-
-    while (getline(_file_ram, line)) {
-        if (line.compare(0, 9, "MemTotal:") == 0)
-            _total_kb = stoul(line.substr(10));
-        else if (line.compare(0, 13, "MemAvailable:") == 0) {
-            _free_kb = stoul(line.substr(14));
+    DBG(" --- Getting ram ---");
+    while (getline(_file_mem, line)) {
+        if (line.compare(0, 9, "MemTotal:") == 0) {
+            DBG(" - " << line);
+            _ram_total_kb = stoul(line.substr(10));
+        } else if (line.compare(0, 13, "MemAvailable:") == 0) {
+            DBG(" - " << line);
+            _ram_free_kb = stoul(line.substr(14));
             break;
         }
-        _file_ram.ignore(1024, '\n');
+
+        _file_mem.ignore(1024, '\n');
     }
 
-    _file_ram.clear();
-    _file_ram.seekg(0, ios::beg);
+    // Fetch swap only if needed
+    if (mode == STATUS_MODE::HARDWARE_ADVANCED) {
+        DBG(" --- Getting swap ---");
+        while (getline(_file_mem, line)) {
+            if (line.compare(0, 10, "SwapTotal:") == 0) {
+                DBG(" - " << line);
+                _swap_total_kb = stoul(line.substr(11));
+            } else if (line.compare(0, 9, "SwapFree:") == 0) {
+                DBG(" - " << line);
+                _swap_free_kb = stoul(line.substr(10));
+                break;
+            }
 
-    _used_kb = _total_kb - _free_kb;
+            _file_mem.ignore(1024, '\n');
+        }
+    }
+
+    _file_mem.clear();
+    _file_mem.seekg(0, std::ios::beg);
+}
+
+void Ram::_interpret_data(const STATUS_MODE mode) {
+    _ram_used_kb = _ram_total_kb - _ram_free_kb;
+    if (mode == STATUS_MODE::HARDWARE_ADVANCED)
+        _swap_used_kb = _swap_total_kb - _swap_free_kb;
 }

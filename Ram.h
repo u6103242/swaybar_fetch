@@ -12,21 +12,21 @@
 
 class Ram {
 public:
-    /// Returns cpu status
+    /// Returns ram status
     std::string get_status(STATUS_MODE mode);
 
-    /// Initializes some values
-    Ram();
 private:
-    /// File stream of /proc/stat
-    ifstream _file_ram = ifstream("/proc/meminfo");
-    /// Formatted data from latest cpu status
-    std::string _formatted_status;
+    /// File stream of /proc/meminfo
+    std::ifstream _file_mem = std::ifstream("/proc/meminfo");
 
-    unsigned long _free_kb, _total_kb, _used_kb;
+    unsigned long _ram_free_kb, _ram_total_kb, _ram_used_kb;
+    unsigned long _swap_free_kb, _swap_total_kb, _swap_used_kb;
 
-    /// Fetches the cpu status
-    void _get_ram();
+    /// Fetches the ram status
+    void _fetch_data(STATUS_MODE mode);
+
+    /// Processes the fetched data
+    void _interpret_data(STATUS_MODE mode);
 };
 
 

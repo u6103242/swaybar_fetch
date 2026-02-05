@@ -4,6 +4,8 @@
 
 #include "Cpu.h"
 
+#include "Debug.h"
+
 Cpu::Cpu() {
     _get_cpu();
 }

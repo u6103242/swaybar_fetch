@@ -33,7 +33,7 @@ void SystemStatus::force_update() {
     _get_time();
 }
 
-string SystemStatus::get_status() const {
+std::string SystemStatus::get_status() const {
     if (not _updated) return _cache_out;
 
     // Reload output
@@ -44,7 +44,7 @@ string SystemStatus::get_status() const {
         _cache_ram + sep +
         _cache_aud + sep +
         _cache_pow + sep +
-        _cache_time + sep;
+        _cache_time;
 }
 
 void SystemStatus::_get_lang() {
@@ -54,7 +54,7 @@ void SystemStatus::_get_lang() {
 
 void SystemStatus::_get_net() {
     _updated = true;
-    //_cache_net = _sys_net.get_status(_mode);
+    _cache_net = _sys_net.get_status(_mode);
 }
 
 void SystemStatus::_get_cpu() {

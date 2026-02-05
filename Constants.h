@@ -7,9 +7,7 @@
 
 #include <string>
 
-using namespace std;
-
-const string sep = " | ";
+const std::string sep = " | ";
 
 /// Ticks per second
 constexpr unsigned short int TPS = 5;
@@ -17,22 +15,28 @@ constexpr unsigned short int TPS = 5;
 constexpr unsigned long MSPT = 1000.0 / TPS;
 
 /// Milliseconds per update
-constexpr unsigned short int _MSPU_LANG = 5000; // 15s
-constexpr unsigned short int _MSPU_NET = 10000; // 10s
-constexpr unsigned short int _MSPU_CPU = 500; // 0.5s
-constexpr unsigned short int _MSPU_RAM = 1000; // 0.5s
-constexpr unsigned short int _MSPU_AUD = 500; // 0.5s
-constexpr unsigned short int _MSPU_POW = 500; // 0.5s
-constexpr unsigned short int _MSPU_TIME = 1000; // 1s
+constexpr unsigned int _MSPU_LANG = 5000; // 15s
+constexpr unsigned int _MSPU_NET = 10000; // 10s
+constexpr unsigned int _MSPU_DISK = 300000; // 5min
+constexpr unsigned int _MSPU_CPU = 500; // 0.5s
+constexpr unsigned int _MSPU_RAM = 1000; // 0.5s
+constexpr unsigned int _MSPU_AUD = 500; // 0.5s
+constexpr unsigned int _MSPU_POW = 500; // 0.5s
+constexpr unsigned int _MSPU_TIME = 1000; // 1s
 
 /// Ticks until update
-constexpr unsigned short int _TUU_LANG = _MSPU_LANG / MSPT;
-constexpr unsigned short int _TUU_NET = _MSPU_NET / MSPT;
-constexpr unsigned short int _TUU_CPU = _MSPU_CPU / MSPT;
-constexpr unsigned short int _TUU_RAM = _MSPU_RAM / MSPT;
-constexpr unsigned short int _TUU_AUD = _MSPU_AUD / MSPT;
-constexpr unsigned short int _TUU_POW = _MSPU_POW / MSPT;
-constexpr unsigned short int _TUU_TIME = _MSPU_TIME / MSPT;
+constexpr unsigned short int ms_to_ticks(const unsigned long ms) {
+    return (ms / MSPT < 1 ? 1 : ms / MSPT);
+}
+
+constexpr unsigned short int _TUU_LANG = ms_to_ticks(_MSPU_LANG);
+constexpr unsigned short int _TUU_NET = ms_to_ticks(_MSPU_NET);
+constexpr unsigned short int _TUU_DISK = ms_to_ticks(_MSPU_DISK);
+constexpr unsigned short int _TUU_CPU = ms_to_ticks(_MSPU_CPU);
+constexpr unsigned short int _TUU_RAM = ms_to_ticks(_MSPU_RAM);
+constexpr unsigned short int _TUU_AUD = ms_to_ticks(_MSPU_AUD);
+constexpr unsigned short int _TUU_POW = ms_to_ticks(_MSPU_POW);
+constexpr unsigned short int _TUU_TIME = ms_to_ticks(_MSPU_TIME);
 
 /// Status modes
 enum class STATUS_MODE {
