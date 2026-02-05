@@ -89,6 +89,7 @@ void Ram::_fetch_data(const STATUS_MODE mode) {
 
 void Ram::_interpret_data(const STATUS_MODE mode) {
     _ram_used_kb = _ram_total_kb - _ram_free_kb;
+    // Calculate swap v only if needed
     if (mode == STATUS_MODE::HARDWARE_ADVANCED)
         _swap_used_kb = _swap_total_kb - _swap_free_kb;
 }
