@@ -8,8 +8,6 @@
 #include "Debug.h"
 
 [[noreturn]] int main() {
-	DBG("Program started");
-
 	ios_base::sync_with_stdio(false);
 
 	SystemStatus sys(DEFAULT_MODE);

@@ -15,31 +15,51 @@ Network::Network() {
         net_interface aux_interface;
 
         aux_interface.path = entry.path().string();
-        aux_interface.interface_name = aux_interface.path.erase(aux_interface.path.size() - 1);
-        if (aux_interface.interface_name == "lo") continue;
-
+        aux_interface.interface_name = entry.path().filename().string();
+        DBG("Found interface: " << aux_interface.interface_name << " at '" << aux_interface.path << "'");
+        if (aux_interface.interface_name == "lo") {
+            DBG(" - Skiped 'lo' interface\n");
+            continue;
+        }
         aux_interface.type = std::filesystem::directory_entry(aux_interface.path + "/wireless").exists() ? WIRELESS : WIRED;
+        DBG(" - [" << aux_interface.interface_name << "] Type: " << (aux_interface.type == WIRELESS ? "Wireless" : "Wired"));
 
-        std::ifstream operstate(aux_interface.path + "/operstate");
-        std::string operstate_val;
-        operstate >> operstate_val;
-        aux_interface.oper_up = operstate_val == "up";
-        operstate.close();
-        if (not aux_interface.oper_up) continue;
+        std::ifstream file_operstate(aux_interface.path + "/operstate");
+        if (not file_operstate.is_open())
+            DBG(" - Couldn't open operstate file");
+        else {
+            std::string operstate_val;
+            file_operstate >> operstate_val;
+            aux_interface.oper_up = operstate_val == "up";
+            DBG(" - [" << aux_interface.interface_name << "] Operstate: " << operstate_val);
+            file_operstate.close();
+            if (not aux_interface.oper_up) {
+                DBG(" - Skiped interface\n");
+                continue;
+            }
+        }
 
-        std::ifstream carrier(aux_interface.path + "/carrier");
-        std::string carrier_val;
-        operstate >> carrier_val;
-        aux_interface.oper_up = carrier_val == "1";
-        operstate.close();
-        if (not aux_interface.oper_up) continue;
+        std::ifstream file_carrier(aux_interface.path + "/carrier");
+        if (not file_carrier.is_open())
+            DBG(" - Couldn't open carrier file");
+        else {
+            std::string carrier_val;
+            file_carrier >> carrier_val;
+            aux_interface.oper_up = carrier_val == "1";
+            DBG(" - [" << aux_interface.interface_name << "] Carrier: " << carrier_val);
+            file_carrier.close();
+            if (not aux_interface.oper_up) {
+                DBG(" - Skiped interface\n");
+                continue;
+            }
+        }
 
         interfaces.push_back(aux_interface);
-
-        DBG("Added interface: " << aux_interface.interface_name << " | Type: " << aux_interface.type << ")");
+        DBG(" - Added interface\n");
     }
 
     // Get interfaces' state
+    DBG("Getting interfaces' state");
     _file_interfaces_state.ignore(1024, '\n'); // header 1
     _file_interfaces_state.ignore(1024, '\n'); // header 2
     _file_interfaces_state.ignore(1024, '\n'); // lo
@@ -48,6 +68,7 @@ Network::Network() {
     std::string interface_name;
     while (_file_interfaces_state >> interface_name) {
         interface_name = interface_name.erase(interface_name.size() - 1);
+        DBG("Interface name: " << interface_name);
         _file_interfaces_state
             >> state.rx_bytes >> state.rx_packets >> state.rx_errs >> state.rx_fifo
             >> state.rx_frame >> state.rx_compressed >> state.rx_multicast
@@ -61,7 +82,7 @@ Network::Network() {
         );
 
         if (it == interfaces.end()) {
-            DBG("State for unknown interface: " << interface_name);
+            DBG(" - Skipping interface");
             continue;
         }
     }
